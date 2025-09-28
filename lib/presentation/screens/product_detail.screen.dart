@@ -47,8 +47,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       body: FutureBuilder<ProductModel>(
         future: _future,
         builder: (context, snap) {
-          if (snap.connectionState == ConnectionState.waiting)
+          if (snap.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
+          }
           if (snap.hasError) return Center(child: Text('Error: ${snap.error}'));
           final p = snap.data!;
           return SingleChildScrollView(
@@ -176,27 +177,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               },
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              icon: const Icon(Icons.payment),
-                              label: const Text('Buy Now'),
-                              onPressed: () {
-                                final authState =
-                                    context.read<AuthBloc>().state;
-                                if (authState is Authenticated) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text('Buying now! (Mock)')));
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Please login to buy items')));
-                                }
-                              },
-                            ),
-                          )
                         ]),
                       ]),
                 ),

@@ -43,8 +43,10 @@ dependencies:
   hive_flutter: ^1.1.0
   flutter_secure_storage: ^8.0.0
   cached_network_image: ^3.2.3
-  intl: ^0.18.0
+  intl: 0.20.2
   connectivity_plus: ^5.0.2
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

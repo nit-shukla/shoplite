@@ -92,7 +92,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
         children: [
           // Search bar
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
             child: Row(children: [
               Expanded(
                 child: TextField(
