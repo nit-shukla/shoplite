@@ -1,115 +1,128 @@
-# shoplite
-A compact Flutter e-commerce app built for the ShopLite hiring task.
+# ShopLite
 
-1. Problem Statement
+A compact Flutter e-commerce app that showcases Flutter fundamentals end-to-end: clean architecture, state management, networking, offline cache, testing, CI, and UX polish.
 
-Build ShopLite, a 3-screen shopping app:
-Catalog: Paginated product list with search and category filters.
-Product Detail: Images carousel, price, description, rating, add/remove favorites, and add to cart.
-Cart/Checkout (mock): View items, update quantity, remove items, and a mock “Place Order” flow with summary.
-Authentication is email + password (mock) with a token stored securely. Favorites and cart must persist across app restarts. The app should work with spotty/no internet by reading from a local cache.
+## App Overview & Screenshots
+ShopLite is a three-screen shopping application designed to demonstrate a robust Flutter development approach.
 
-2. Data Source (choose ONE)
+*   **Login Screen**: A newly designed, attractive login interface with basic validation. Uses mock authentication with a securely stored token.
+*   **Catalog Screen**: Displays a paginated list of products with search and category filtering capabilities. Includes pull-to-refresh and a theme toggle.
+*   **Product Detail Screen**: Shows detailed information about a selected product, including an image carousel, price, description, rating, and options to add/remove from favorites and add to cart.
+*   **Cart/Checkout (Mock) Screen**: Allows users to view items in their cart, adjust quantities, remove items, and proceed through a mock "Place Order" flow with a summary.
 
-Pick whichever you prefer (no keys needed):
-DummyJSON (products, categories, auth): https://dummyjson.com/
-Products: /products?limit=20&skip=0
-Product by id: /products/{id}
-Categories: /products/categories
-Search: /products/search?q={query}
-Login: POST /auth/login (returns token), GET /auth/me (verify)
-Fake Store API (products, categories, auth): https://fakestoreapi.com/
-If you’d rather avoid external APIs, you may serve the same shapes locally via json-server. Just note it clearly in your README.
-3. Core Requirements (must-have)
+**(Placeholder for screenshots - Add actual screenshots here)**
+![Login Screen](docs/screenshots/login_screen.png)
+![Catalog Screen](docs/screenshots/catalog_screen.png)
+![Product Detail Screen](docs/screenshots/product_detail_screen.png)
+![Cart Screen](docs/screenshots/cart_screen.png)
 
-A. Architecture & State
+## Architecture Diagram
 
-Use a layered architecture (data/domain/presentation) with Repository pattern.
-Choose one state management approach (BLoC, Riverpod, or ValueNotifier + InheritedWidget).
-Explain the choice in the README.
-B. Networking & Caching
-Paginated catalog (infinite scroll or “Load more”).
-Search by keyword and filter by category.
-Offline-first: cache the latest catalog & product detail to local storage (Hive / Isar / SQLite).
-If network fails, show cached data with an offline banner.
-Cache should have a simple stale strategy (e.g., 30 min TTL or version bump).
-C. Auth (Mock)
-Login screen (basic validation).
-On success, store token in secure storage.
-Gate the Cart behind auth: unauthenticated users get redirected to login.
-D. Favorites & Cart
-Mark/unmark favorite (local persistence).
-Cart: add/remove items, modify quantity, compute totals, and mock “Place Order.”
-Show a toast/snackbar confirmation on add/remove.
-E. UX & UI
-Light/Dark theme toggle.
-Pull-to-refresh on catalog.
-Hero animation or equivalent micro-interaction from list → detail.
-Empty/error/loading states that look intentional (not just a spinner).
-F. Quality
-Static analysis: flutter analyze must pass; enable flutter_lints (or equivalent).
-Unit tests: at least 4 (repositories/services + 1 viewmodel/cubit/bloc).
-Widget test: at least 1 (e.g., catalog list + empty/error state).
-CI: GitHub Actions that runs formatting, analyze, and tests.
-Performance: avoid unnecessary rebuilds; lazy image loading.
+ShopLite employs a layered architecture to ensure separation of concerns, maintainability, and testability.
 
-4. Nice-to-Have (stretch, time permitting)
+```
++-------------------+     +-------------------+     +-------------------+
+|   Presentation    |     |      Domain       |     |        Data       |
+| (UI & BLoCs/Cubits)|<--->|   (Repositories)  |<--->|    (APIs & Local)   |
++-------------------+     +-------------------+     +-------------------+
+        |                            |                         |
+        |                            |                         |
+        v                            v                         v
+     Widgets                      Interfaces              Dio (Network)
+     Screens                                              Hive (Local Cache)
+     BLoCs/Cubits                                         FlutterSecureStorage
+```
 
-Localization: English + Hindi (2–3 strings).
-Golden tests for a small widget.
-Deep links to open a product detail.
-Simple dependency injection (get_it or Riverpod providers).
-Accessibility: semantic labels on tappables & images.
-Stretch items are bonus; don’t sacrifice core quality to add them.
+**Layers Breakdown:**
+*   **Presentation Layer**: Responsible for rendering the UI and handling user interaction. It consumes data from the Domain layer via BLoCs/Cubits. Screens and UI widgets reside here.
+*   **Domain Layer (Repositories)**: Defines the business logic and interfaces for data operations. Repositories act as an abstraction over data sources, providing a clean API to the Presentation layer without exposing implementation details.
+*   **Data Layer (APIs & Local Storage)**: Implements the data interfaces defined in the Domain layer. It handles fetching data from remote sources (APIs using `Dio`) and local storage (`Hive` for cache and `FlutterSecureStorage` for tokens). It maps raw data into domain-specific models.
 
-5. Deliverables
+## State Management Choice: BLoC
 
-GitHub repository (public or share access):
-Code organized by layers.
-A README.md covering:
-App overview & screenshots
-Architecture diagram (ASCII, Mermaid, or image)
-State management choice & why
-How to run (Android & iOS/simulator)
-How to run tests
-Caching strategy & offline behavior
-Known trade-offs / limitations
-CI status badge in README (if using GitHub).
-Build artifacts
-Android APK under builds/ShopLite.apk (or attach via release).
-(Optional) iOS: instructions to run on Simulator.
-App demo video (3–6 min)
-Unlisted link (Loom/Drive/YouTube) or MP4 in demo/.
-Must show: login, paginated catalog, search & category filter, detail with images, favorites, add to cart, update qty, offline banner with cached list, mock checkout success.
-Test coverage summary (a line in README or screenshot of terminal).
+**Why BLoC?**
+BLoC (Business Logic Component) was chosen for ShopLite due to its robust, predictable, and scalable nature, aligning well with the "clean architecture" requirement.
 
-6. Acceptance Criteria
+*   **Separation of Concerns**: BLoC effectively separates UI from business logic, making components easier to test and maintain independently.
+*   **Predictable State Changes**: All state changes are driven by events, leading to a clear and traceable flow of data and state, which simplifies debugging.
+*   **Scalability**: For an e-commerce app with multiple features (catalog, cart, favorites, auth), BLoC's structured approach helps manage complexity as the application grows.
+*   **Reactive Programming**: It leverages streams, providing a reactive way to handle asynchronous data flows and UI updates.
+*   **Testability**: BLoCs are pure Dart classes, making them highly testable independently of the UI.
 
-App builds and runs on Android emulator/device.
-Catalog loads with pagination; search & category filter both work.
-Product detail displays images, title, price, description, and rating.
-Favorites persist across restarts.
-Cart: add/remove/update; total updates correctly; “Place Order” shows success screen.
-Login protects cart flow; token stored securely; logout clears sensitive state.
-Killing network still shows last cached catalog with an offline indicator.
-Code passes flutter analyze and tests pass on CI.
-README is clear; demo video covers required flows.
+## How to Run
 
-7. Technical Constraints
+### Prerequisites
+*   Flutter SDK (3.x+) installed and configured.
+*   An Android device/emulator or iOS simulator.
 
-Flutter stable (3.x+) with sound null-safety.
-Use Dio or http, plus a JSON serializer (json_serializable or manual).
-Use CachedNetworkImage (or similar) for product images.
-Local storage: Hive, Isar, or sqflite.
-Avoid heavy packages unless justified in README.
+### Steps
+1.  **Clone the repository:**
+    ```bash
+    git clone [YOUR_REPO_URL]
+    cd shoplite
+    ```
+2.  **Install dependencies:**
+    ```bash
+    flutter pub get
+    ```
+3.  **Run the app on a connected device/emulator/simulator:**
+    ```bash
+    flutter run
+    ```
+    (Replace `flutter run` with `flutter run -d <device_id>` if you have multiple devices and want to specify one.)
 
-8. Demo Script (what to show in your video)
+### Sample Login Credentials
+*   **Username**: `kminchelle`
+*   **Password**: `0lelplR`
 
-Launch → Login (show validation, then success).
-Catalog loads → scroll to trigger pagination.
-Use Search (type a keyword) and Category filter.
-Tap product → Hero image animation → detail; add/remove Favorite.
-Add to Cart → go to Cart → change quantities → see totals update.
-Turn airplane mode on → return to Catalog → see cached items + offline banner.
-Mock “Place Order” → success screen.
-Relaunch app → favorites & cart still present.
+## How to Run Tests
+
+ShopLite includes unit and widget tests.
+
+1.  **Run all tests:**
+    ```bash
+    flutter test
+    ```
+2.  **To generate coverage report (optional):**
+    ```bash
+    flutter test --coverage
+    genhtml coverage/lcov.info --output=coverage/html
+    ```
+    Then open `coverage/html/index.html` in your browser.
+
+## Caching Strategy & Offline Behavior
+
+ShopLite is designed with an offline-first approach using `Hive` for local data caching.
+
+*   **Data Cached**: Product catalog lists and individual product details are cached.
+*   **Persistence**: Cart and Favorites data also persist locally using Hive.
+*   **Offline Detection**: The `connectivity_plus` package is used to detect real-time network status.
+*   **Offline Banner**: An "You are offline" banner is displayed on the Catalog screen when the device loses network connectivity, indicating that cached data is being served.
+*   **Staleness Strategy**: A 30-minute Time-To-Live (TTL) is implemented for cached product data.
+    *   When the network is unavailable, the app attempts to load data from the cache.
+    *   If cached data exists and is within the 30-minute TTL, it's served.
+    *   If cached data is older than 30 minutes (stale), it's invalidated (deleted), and the app will rethrow an exception, effectively treating it as if no cache was found. This ensures users don't see excessively outdated information.
+
+## Known Trade-offs / Limitations
+*   **No Server-Side Cart/Favorites**: Cart and favorites data are stored purely locally. This means if the user uninstalls the app, this data will be lost. To persist across uninstalls, a backend API for these features would be required.
+*   **Basic Error Handling**: While network and data parsing errors are caught, the user-facing error messages are sometimes generic. More granular error states and user feedback could be implemented.
+*   **Mock Authentication**: Authentication is mocked using DummyJSON. In a real-world scenario, a robust authentication service with proper user management would be integrated.
+*   **Limited Category Filtering**: The category filter fetches all categories initially. For a very large number of categories, a paginated or searchable category picker might be more efficient.
+*   **Minimal Widget Testing**: While basic widget tests exist, more comprehensive UI testing with empty/error states and different screen sizes could be added.
+*   **No Dependency Injection Framework**: Dependencies are passed manually. Using a DI framework like `get_it` or `Riverpod` would streamline dependency management.
+
+## CI Status Badge
+**(Placeholder for CI Badge - Add your GitHub Actions status badge here)**
+e.g., `![Flutter CI](https://github.com/YOUR_USERNAME/shoplite/actions/workflows/flutter.yml/badge.svg)`
+
+## Build Artifacts
+**(Placeholder for Android APK link)**
+e.g., `[ShopLite.apk](link-to-your-apk)`
+
+## App Demo Video
+**(Placeholder for Unlisted YouTube/Loom/Drive link)**
+e.g., `[Demo Video](link-to-your-video)`
+
+## Test Coverage Summary
+**(Placeholder for test coverage summary or screenshot)**
+(Can be a line from the terminal output of `flutter test --coverage` or a screenshot.)
