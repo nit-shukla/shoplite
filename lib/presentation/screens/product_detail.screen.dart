@@ -56,43 +56,81 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // images carousel
-                SizedBox(
-                  height: 300,
-                  child: PageView(
-                    children: p.images.isNotEmpty
-                        ? p.images
-                            .map((url) => Hero(
-                                tag: 'product_${p.id}',
-                                child: CachedNetworkImage(
-                                    imageUrl: url, fit: BoxFit.cover)))
-                            .toList()
-                        : [
-                            Hero(
-                                tag: 'product_${p.id}',
-                                child: CachedNetworkImage(
-                                    imageUrl: p.thumbnail, fit: BoxFit.cover))
-                          ],
+                ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(bottom: Radius.circular(20)),
+                  child: SizedBox(
+                    height: 300,
+                    width: double.infinity,
+                    child: p.images.isNotEmpty
+                        ? PageView.builder(
+                            itemCount: p.images.length,
+                            itemBuilder: (context, index) => Hero(
+                                  tag: 'product_${p.id}_${index}',
+                                  child: CachedNetworkImage(
+                                      imageUrl: p.images[index],
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          const Center(
+                                              child:
+                                                  CircularProgressIndicator()),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error)),
+                                ))
+                        : Hero(
+                            tag: 'product_${p.id}',
+                            child: CachedNetworkImage(
+                                imageUrl: p.thumbnail,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error)),
+                          ),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(p.title,
-                            style: Theme.of(context).textTheme.headline6),
+                        Text(
+                          p.title,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blueAccent),
+                        ),
                         const SizedBox(height: 8),
-                        Text('₹${p.price}',
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        Text(
+                          '₹${p.price}',
+                          style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.green),
+                        ),
                         const SizedBox(height: 8),
-                        Row(children: [
-                          const Icon(Icons.star, size: 16),
-                          const SizedBox(width: 4),
-                          Text('${p.rating}')
+                        Row(children: <Widget>[
+                          ...List.generate(5, (index) {
+                            return Icon(
+                              index < p.rating.floor()
+                                  ? Icons.star
+                                  : Icons.star_border,
+                              color: Colors.amber,
+                              size: 20,
+                            );
+                          }),
+                          const SizedBox(width: 8),
+                          Text('${p.rating} / 5.0',
+                              style: Theme.of(context).textTheme.titleSmall)
                         ]),
                         const SizedBox(height: 12),
-                        Text(p.description),
+                        Text(
+                          p.description,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                         const SizedBox(height: 20),
                         Row(children: [
                           IconButton(
@@ -138,6 +176,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               },
                             ),
                           ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              icon: const Icon(Icons.payment),
+                              label: const Text('Buy Now'),
+                              onPressed: () {
+                                final authState =
+                                    context.read<AuthBloc>().state;
+                                if (authState is Authenticated) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text('Buying now! (Mock)')));
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Please login to buy items')));
+                                }
+                              },
+                            ),
+                          )
                         ]),
                       ]),
                 ),
