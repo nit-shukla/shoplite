@@ -3,9 +3,26 @@ import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthRepository {
-  final Dio _dio = Dio(BaseOptions(baseUrl: 'https://dummyjson.com'));
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final Dio _dio;
+  final FlutterSecureStorage _storage;
   static const _tokenKey = 'auth_token';
+
+  AuthRepository({FlutterSecureStorage? storage})
+      : _dio = Dio(BaseOptions(baseUrl: 'https://dummyjson.com')),
+        _storage = storage ?? const FlutterSecureStorage();
+
+  Future<void> saveToken(String token) async {
+    await _storage.write(key: _tokenKey, value: token);
+  }
+
+  Future<String?> getToken() async {
+    return await _storage.read(key: _tokenKey);
+  }
+
+  Future<bool> isLoggedIn() async {
+    final token = await _storage.read(key: _tokenKey);
+    return token != null;
+  }
 
   Future<String> login(String username, String password) async {
     try {
@@ -61,14 +78,5 @@ class AuthRepository {
 
   Future<void> logout() async {
     await _storage.delete(key: _tokenKey);
-  }
-
-  Future<bool> isLoggedIn() async {
-    final token = await _storage.read(key: _tokenKey);
-    return token != null;
-  }
-
-  Future<String?> getToken() async {
-    return await _storage.read(key: _tokenKey);
   }
 }

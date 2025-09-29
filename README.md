@@ -10,11 +10,10 @@ ShopLite is a three-screen shopping application designed to demonstrate a robust
 *   **Product Detail Screen**: Shows detailed information about a selected product, including an image carousel, price, description, rating, and options to add/remove from favorites and add to cart.
 *   **Cart/Checkout (Mock) Screen**: Allows users to view items in their cart, adjust quantities, remove items, and proceed through a mock "Place Order" flow with a summary.
 
-**(Placeholder for screenshots - Add actual screenshots here)**
-![Login Screen](docs/screenshots/login_screen.png)
-![Catalog Screen](docs/screenshots/catalog_screen.png)
-![Product Detail Screen](docs/screenshots/product_detail_screen.png)
-![Cart Screen](docs/screenshots/cart_screen.png)
+### App Screenshots
+| Login | Catalog | Product Detail | Cart |
+|-------|---------|----------------|------|
+| ![](docs/screenshots/login.png) | ![](docs/screenshots/catalog.png) | ![](docs/screenshots/detail.png) | ![](docs/screenshots/cart.png) |
 
 ## Architecture Diagram
 
@@ -116,12 +115,10 @@ ShopLite is designed with an offline-first approach using `Hive` for local data 
 e.g., `![Flutter CI](https://github.com/YOUR_USERNAME/shoplite/actions/workflows/flutter.yml/badge.svg)`
 
 ## Build Artifacts
-**(Placeholder for Android APK link)**
-e.g., `[ShopLite.apk](link-to-your-apk)`
+You can find the latest APK here: [app-release.apk](docs/builds/app-release (2).apk)
 
 ## App Demo Video
-**(Placeholder for Unlisted YouTube/Loom/Drive link)**
-e.g., `[Demo Video](link-to-your-video)`
+You can watch a demo of the app here: [App Demo Video](docs/videos/app_vdemo_video.mp4)
 
 ## Test Coverage Summary
 **(Placeholder for test coverage summary or screenshot)**
